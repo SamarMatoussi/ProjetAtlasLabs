@@ -1,0 +1,296 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body border-bottom">
+          <div class="d-flex align-items-center">
+            <h5 class="mb-0 card-title flex-grow-1">Liste des agences</h5>
+            <div class="flex-shrink-0 d-flex gap-1">
+            <!-- <a  class="btn btn-primary" (click)="adduser()">Ajouter un utilisateur</a> -->
+             <a class="btn btn-primary" (click)="openAddModal()">Ajouter une agence</a>
+              
+            </div>
+          </div>
+        </div>
+         <div class="card-body border-bottom">
+          <div class="row g-3">
+           <div class="col-xxl-4 col-lg-4">
+            <input type="search" class="form-control" id="searchInput" placeholder="Search for ..." (keyup)="searchAgence($event.target.value)">
+          </div>
+           <!--<div class="col-xxl-2 col-lg-4">
+            <select class="form-select" [(ngModel)]="selectedStatut" id="idStatus" aria-label="Default select example">
+              <option value="" selected>Sélectionnez l'état</option>
+                <option value="Active">Activé</option>
+                <option value="New">Désactivé</option>
+              </select>
+            </div>
+            <div class="col-xxl-2 col-lg-4">
+              <select class="form-select" [(ngModel)]="selectedRole" id="idRole" aria-label="Default select example">
+                <option value="" selected>Sélectionnez le rôle</option>
+                <option value="Agent">AGENT</option>
+                <option value="Client">CLIENT</option>
+              </select>
+            </div>
+             <div class="col-xxl-2 col-lg-4">
+             <div id="datepicker1">
+                <input type="text" placeholder="Datepicker" class="form-control " bsDatepicker [bsConfig]="{ showWeekNumbers: false }">
+
+              </div>  
+            </div>
+            <div class="col-xxl-2 col-lg-4">
+              <button type="button" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+            </div>
+          </div>-->
+        </div> 
+        <div class="card-body">
+
+          <div class="table-responsive">
+            <table class="table align-middle dt-responsive nowrap w-100 table-check" id="job-list">
+              <thead>
+                <tr>
+                  <th scope="col">Nom</th>
+                  <th scope="col">Telephone</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">adresse</th>
+                  <th scope="col">Code Postal</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let data of listeAgence">
+                  <td>{{data.nom}}</td>
+                  <td>{{data.numeroTelephone}}</td>
+                  <td>{{data.email}}</td>
+                  <td>{{data.adresse}}</td>
+                  <td>{{data.codePostal}}</td>
+                  <td>
+                    <ul class="list-unstyled hstack gap-1 mb-0">
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                        <a class="btn btn-sm btn-soft-primary" (click)="openViewModal(data)"><i class="mdi mdi-eye-outline"></i></a>
+                      </li>
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                        <a class="btn btn-sm btn-soft-info" (click)="openUpdateModal(data)"><i class="mdi mdi-pencil-outline"></i></a>
+                      </li>
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                        <a  data-bs-toggle="modal" class="btn btn-sm btn-soft-danger" (click)="deleteAgence(data.id)"><i class="mdi mdi-delete-outline"></i></a>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="row justify-content-between align-items-center">
+           <!--<div class="col-auto me-auto">
+              <p class="text-muted mb-0">Showing <b>{{service.startIndex}}</b> to <b>{{service.endIndex}}</b> of <b>{{service.totalRecords}}</b> entries</p>
+            </div>--> 
+            <div class="col-auto">
+              <div class="text-md-right float-md-end pagination-rounded">
+            <!--   <ul class="pagination pagination-rounded justify-content-end mb-2">
+                  <pagination [totalItems]="(total | async)!" [(ngModel)]="service.page" [itemsPerPage]="service.pageSize" previousText="&lsaquo;" nextText="&rsaquo;"></pagination>
+                </ul>--> 
+              </div>
+            </div>
+            <!--end col-->
+          </div>
+          <!--end row-->
+        </div>
+      </div>
+    </div>
+  </div>
+<!--</div>-->
+
+<ng-template #addContent role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Ajouter une agence</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal" (click)="modalRef?.hide()"></button>
+  </div>
+  <form (ngSubmit)="addagence()" [formGroup]="agenceForm">
+    <div class="modal-body">
+      <div class="mb-3">
+        <label for="nom-field" class="form-label">Nom</label>
+        <input type="text" id="nom-field" class="form-control" placeholder="Entrer nom" required formControlName="nom"
+               [ngClass]="{ 'is-invalid': submitted && agenceForm.get('nom')?.errors }"/>
+        <div *ngIf="submitted && agenceForm.get('nom')?.errors" class="invalid-feedback" align="left" class="text-danger">
+          {{ handleError('nom') }}
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="numeroTelephone" class="form-label fw-bold">Numéro de téléphone</label>
+        <input type="text" id="numeroTelephone" formControlName="numeroTelephone" class="form-control" placeholder="Saisissez votre numéro de téléphone"/>
+        <div *ngIf="submitted && agenceForm.get('numeroTelephone')?.errors?.required" class="text-danger">
+          Le numéro de téléphone est requis.
+        </div>
+        <div *ngIf="submitted && agenceForm.get('numeroTelephone')?.errors?.pattern" class="text-danger">
+          Le numéro de téléphone doit contenir exactement 8 chiffres.
+        </div>
+      </div>
+      
+      
+
+      <div class="mb-3">
+        <label for="email" class="form-label fw-bold">Email</label>
+        <input type="email" id="email" formControlName="email" class="form-control" placeholder="Saisissez votre email" 
+               required [ngClass]="{ 'is-invalid': submitted && agenceForm.get('email')?.errors }"/>
+        <div *ngIf="submitted && agenceForm.get('email')?.errors?.['required']" class="invalid-feedback" align="left">
+          L'email est requis.
+        </div>
+        <div *ngIf="submitted && agenceForm.get('email')?.errors?.['email']" class="invalid-feedback" align="left">
+          Le format de l'email est invalide.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="adresse-field" class="form-label">Adresse</label>
+        <input type="text" id="adresse-field" class="form-control" placeholder="Entrer adresse" required formControlName="adresse"
+               [ngClass]="{ 'is-invalid': submitted && agenceForm.get('adresse')?.errors }" />
+        <div *ngIf="submitted && agenceForm.get('adresse')?.errors" class="invalid-feedback" align="left">
+          <div *ngIf="agenceForm.get('adresse')?.errors?.['required']">L'adresse est requise.</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="codePostal-field" class="form-label">Code Postal</label>
+        <input type="text" id="codePostal-field" class="form-control" placeholder="Entrer code postal" required formControlName="codePostal"
+               [ngClass]="{ 'is-invalid': submitted && agenceForm.get('codePostal')?.errors }" />
+        <div *ngIf="submitted && agenceForm.get('codePostal')?.errors" class="invalid-feedback" align="left">
+          <div *ngIf="agenceForm.get('codePostal')?.errors?.['required']">Le code postal est requis.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="hstack gap-2 justify-content-end">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal" (click)="close()">Annuler</button>
+        <button type="submit" class="btn btn-success" id="add-btn">Ajouter</button>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+
+
+<ng-template #updateContent role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Modifier une agence</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal" (click)="modalRef?.hide()"></button>
+  </div>
+  <form (ngSubmit)="updateagence()" [formGroup]="agenceForm">
+    <div class="modal-body">
+
+      <div class="mb-3">
+        <label for="nom-field" class="form-label">Nom</label>
+        <input type="text" id="nom-field" class="form-control" placeholder="Entrer nom" required formControlName="nom"
+               [ngClass]="{ 'is-invalid': submitted && agenceForm.get('nom')?.errors }" />
+        <div *ngIf="submitted && agenceForm.get('nom')?.errors" class="invalid-feedback" align="left">
+          <div *ngIf="agenceForm.get('nom')?.errors?.['required']">Le nom est requis</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="telephone-field" class="form-label">Téléphone</label>
+        <input type="text" id="telephone-field" class="form-control" placeholder="Entrer téléphone" required formControlName="numeroTelephone"
+               [ngClass]="{ 'is-invalid': submitted && agenceForm.get('numeroTelephone')?.errors }" />
+        <div *ngIf="submitted && agenceForm.get('numeroTelephone')?.errors" class="invalid-feedback" align="left">
+          <div *ngIf="agenceForm.get('numeroTelephone')?.errors?.['required']">Le numéro de téléphone est requis</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email-field" class="form-label">Email</label>
+        <input type="text" id="email-field" class="form-control" placeholder="Entrer email" required formControlName="email"
+               [ngClass]="{ 'is-invalid': submitted && agenceForm.get('email')?.errors }" />
+        <div *ngIf="submitted && agenceForm.get('email')?.errors" class="invalid-feedback" align="left">
+          <div *ngIf="agenceForm.get('email')?.errors?.['required']">L'email est requis</div>
+          <div *ngIf="agenceForm.get('email')?.errors?.['email']">Le format de l'email est invalide</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="adresse-field" class="form-label">Adresse</label>
+        <input type="text" id="adresse-field" class="form-control" placeholder="Entrer adresse" required formControlName="adresse"
+               [ngClass]="{ 'is-invalid': submitted && agenceForm.get('adresse')?.errors }" />
+        <div *ngIf="submitted && agenceForm.get('adresse')?.errors" class="invalid-feedback" align="left">
+          <div *ngIf="agenceForm.get('adresse')?.errors?.['required']">L'adresse est requise</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="codePostal-field" class="form-label">Code Postal</label>
+        <input type="text" id="codePostal-field" class="form-control" placeholder="Entrer code postal" required formControlName="codePostal"
+               [ngClass]="{ 'is-invalid': submitted && agenceForm.get('codePostal')?.errors }" />
+        <div *ngIf="submitted && agenceForm.get('codePostal')?.errors" class="invalid-feedback" align="left">
+          <div *ngIf="agenceForm.get('codePostal')?.errors?.['required']">Le code postal est requis</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <div class="hstack gap-2 justify-content-end">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal" (click)="close()">Annuler</button>
+        <button type="submit" class="btn btn-success" id="update-btn">Modifier</button>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+
+<!-- View Modal -->
+<ng-template #viewContent role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel"><i class="mdi mdi-domain"></i> Détails de l'agence</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modalRef?.hide()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title"><i class="mdi mdi-information-outline text-primary"></i> Informations Générales</h6>
+        <hr>
+        <div class="mb-3">
+
+          <label for="viewNom" class="form-label">Nom</label>
+          <div class="input-group">
+            <span class="input-group-text text-success"><i class="mdi mdi-account"></i></span>
+            <input type="text" id="viewNom" class="form-control" [value]="selectedAgence.nom" readonly />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="viewTelephone" class="form-label">Téléphone</label>
+          <div class="input-group">
+            <span class="input-group-text text-info"><i class="mdi mdi-phone"></i></span>
+            <input type="text" id="viewTelephone" class="form-control" [value]="selectedAgence.numeroTelephone" readonly />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="viewTelephone" class="form-label">Email</label>
+          <div class="input-group">
+            <span class="input-group-text text-info"><i class="fas fa-envelope"></i></span>
+            <input type="text" id="viewEmail" class="form-control" [value]="selectedAgence.email" readonly />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="viewAdresse" class="form-label">Adresse</label>
+          <div class="input-group">
+            <span class="input-group-text text-warning"><i class="mdi mdi-map-marker"></i></span>
+            <input type="text" id="viewAdresse" class="form-control" [value]="selectedAgence.adresse" readonly />
+          </div>
+        </div>
+       
+        <div class="mb-3">
+          <label for="viewCodePostal" class="form-label">Code Postal</label>
+          <div class="input-group">
+            <span class="input-group-text text-danger"><i class="mdi mdi-postage-stamp"></i></span>
+            <input type="text" id="viewCodePostal" class="form-control" [value]="selectedAgence.codePostal" readonly />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="close()">Fermer</button>
+  </div>
+</ng-template>
+<!-- End View Modal -->
+
+
+

@@ -1,0 +1,145 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body border-bottom">
+          <div class="d-flex align-items-center">
+            <h5 class="mb-0 card-title flex-grow-1">Liste des Postes</h5>
+            <div class="flex-shrink-0 d-flex gap-1">
+              <a class="btn btn-primary" (click)="openAddModal()">Ajouter un poste</a>
+            </div>
+          </div>
+        </div>
+        <div class="card-body border-bottom">
+          <div class="row g-3">
+            <div class="col-xxl-4 col-lg-4">
+              <input type="search" class="form-control" id="searchInput" placeholder="Rechercher..." (keyup)="searchPoste($event.target.value)">
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table align-middle dt-responsive nowrap w-100 table-check" id="job-list">
+              <thead>
+                <tr>
+                  <th scope="col">Nom</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let poste of listeposte">
+                  <td>{{poste.name}}</td>
+                  <td>{{poste.description}}</td>
+                  <td>
+                    <ul class="list-unstyled hstack gap-1 mb-0">
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                        <a class="btn btn-sm btn-soft-primary" (click)="openViewModal(poste)"><i class="mdi mdi-eye-outline"></i></a>
+                      </li>
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                        <a class="btn btn-sm btn-soft-info" (click)="openUpdateModal(poste)"><i class="mdi mdi-pencil-outline"></i></a>
+                      </li>
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                        <a class="btn btn-sm btn-soft-danger" (click)="deletePoste(poste.id)"><i class="mdi mdi-delete-outline"></i></a>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Modal -->
+  <ng-template #addContent role="document" let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Ajouter un poste</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <form (ngSubmit)="addPoste()" [formGroup]="posteForm">
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Nom</label>
+          <input type="text" class="form-control" placeholder="Entrer le nom" required formControlName="name" [ngClass]="{ 'is-invalid': submitted && form['name'].errors }"/>
+          <div *ngIf="submitted && form['name'].errors" class="invalid-feedback">
+            <div *ngIf="form['name'].errors['required']">Le nom est requis.</div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <input type="text" class="form-control" placeholder="Entrer la description" required formControlName="description" [ngClass]="{ 'is-invalid': submitted && form['description'].errors }" />
+          <div *ngIf="submitted && form['description'].errors" class="invalid-feedback">
+            <div *ngIf="form['description'].errors['required']">La description est requise.</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal" (click)="close()">Annuler</button>
+        <button type="submit" class="btn btn-success">Ajouter</button>
+      </div>
+    </form>
+  </ng-template>
+
+  <!-- Update Modal -->
+  <ng-template #updateContent role="document" let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Modifier le poste</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <form (ngSubmit)="updatePoste()" [formGroup]="posteForm">
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Nom</label>
+          <input type="text" class="form-control" placeholder="Entrer le nom" required formControlName="name" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <input type="text" class="form-control" placeholder="Entrer la description" required formControlName="description" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal"(click)="close()">Annuler</button>
+        <button type="submit" class="btn btn-success">Modifier</button>
+      </div>
+    </form>
+  </ng-template>
+
+  <!-- View Modal -->
+  <ng-template #viewContent role="document" let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel"><i class="mdi mdi-domain"></i> Détails de la poste</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modalRef?.hide()"></button>
+    </div>
+    <div class="modal-body">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title"><i class="mdi mdi-information-outline text-primary"></i> Informations Générales</h6>
+          <hr>
+          <div class="mb-3">
+            <label for="viewName" class="form-label">Nom</label>
+            <div class="input-group">
+              <span class="input-group-text text-success"><i class="mdi mdi-account"></i></span>
+              <input type="text" id="viewNom" class="form-control" [value]="selectedPoste.name" readonly />
+            </div>
+          </div>
+          
+         
+          <div class="mb-3">
+            <label for="viewdescription" class="form-label">Description</label>
+            <div class="input-group">
+              <span class="input-group-text text-danger"><i class="mdi mdi-text-box"></i></span>
+              <input type="text" id="viewCodePostal" class="form-control" [value]="selectedPoste.description" readonly />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="close()">Fermer</button>
+    </div>
+  </ng-template>
+
+</div>

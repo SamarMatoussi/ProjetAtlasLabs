@@ -1,0 +1,113 @@
+<app-loader></app-loader>
+<div class="container-fluid">
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0 font-size-18">Tableau de bord</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <ng-container>
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboards</a></li>
+                            <li class="breadcrumb-item active">Dashboard</li>
+                        </ng-container>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end page title -->
+
+    <div class="row">
+        <!-- User Profile Section -->
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <!-- Avatar Image -->
+                                    <img src="assets/images/users/aaaaa.png" alt="User Avatar" class="avatar-md rounded-circle img-thumbnail">
+                                </div>
+                                <div class="flex-grow-1 align-self-center">
+                                    <div class="text-muted">
+                                        <p class="mb-2">Bienvenue sur votre tableau de bord</p>
+                                        <h5 class="mb-1">{{ userProfile?.firstname }} {{ userProfile?.lastname }}</h5>
+                                        <p class="mb-0">{{ userProfile?.role }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <!-- Additional Info Section -->
+                    <div class="d-flex justify-content-start pt-4">
+                        <div>
+                            <p class="text-muted mb-2">Accédez à votre profil ou effectuez des actions rapides pour ajuster votre espace de travail :</p>
+                            <a class="btn btn-primary btn-sm" [routerLink]="['/contacts/profile']">
+                                Voir Profil <i class="mdi mdi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- start row for charts -->
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="row">
+                <!-- Graphique des notes globales -->
+                <div class="col-lg-6" *ngIf="columnlabelChart.series && columnlabelChart.series.length > 0">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Notes Globales par CIN</h4>
+                            <apx-chart
+                                class="apex-charts"
+                                dir="ltr"
+                                [series]="columnlabelChart.series"
+                                [chart]="columnlabelChart.chart"
+                                [plotOptions]="columnlabelChart.plotOptions"
+                                [yaxis]="columnlabelChart.yaxis"
+                                [title]="columnlabelChart.title"
+                                [dataLabels]="columnlabelChart.dataLabels"
+                                [xaxis]="columnlabelChart.xaxis"
+                            ></apx-chart>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Graphique de classification par appréciation -->
+                <div class="col-lg-6" *ngIf="pieChart.series && pieChart.series.length > 0">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Classification par Appréciation</h4>
+                            <apx-chart
+                                class="apex-charts"
+                                dir="ltr"
+                                [series]="pieChart.series"
+                                [chart]="pieChart.chart"
+                                [labels]="pieChart.labels"
+                                [title]="pieChart.title"
+                            ></apx-chart>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end row -->
+
+    <!-- Affichage si les données sont vides -->
+    <div class="row" *ngIf="!columnlabelChart.series || columnlabelChart.series.length === 0">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <p class="text-center">Chargement des données...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> <!-- container-fluid -->

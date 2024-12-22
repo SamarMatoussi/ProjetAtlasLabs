@@ -1,0 +1,226 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body border-bottom">
+          <div class="d-flex align-items-center">
+            <h5 class="mb-0 card-title flex-grow-1">Liste des activites</h5>
+            <div class="flex-shrink-0 d-flex gap-1">
+             <a class="btn btn-primary" (click)="openAddModal()">Ajouter un Activite</a>
+              
+            </div>
+          </div>
+        </div>
+        <div class="card-body border-bottom">
+           <div class="row g-3">
+           <div class="col-xxl-4 col-lg-4">
+            <input type="search" class="form-control" id="searchInput" placeholder="Search for ..." (keyup)="searchActivite($event.target.value)">
+          </div>
+        
+             <!--<div class="col-xxl-2 col-lg-4">
+             <div id="datepicker1">
+                <input type="text" placeholder="Datepicker" class="form-control " bsDatepicker [bsConfig]="{ showWeekNumbers: false }">
+
+              </div>  
+            </div>
+            <div class="col-xxl-2 col-lg-4">
+              <button type="button" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+            </div>-->
+          </div>
+        </div>
+        <div class="card-body">
+
+          <div class="table-responsive">
+            <table class="table align-middle dt-responsive nowrap w-100 table-check" id="job-list">
+              <thead>
+                <tr>
+                  <th scope="col">Nom</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let activite of activites">
+                  <td>{{activite.name}}</td>
+                  <td>{{activite.description}}</td>
+                  <td>
+                    <ul class="list-unstyled hstack gap-1 mb-0">
+                      
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                        <a class="btn btn-sm btn-soft-primary" (click)="openViewModal(activite)"><i class="mdi mdi-eye-outline"></i></a>
+                      </li>
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                        <a class="btn btn-sm btn-soft-info" (click)="openUpdateModal(activite)"><i class="mdi mdi-pencil-outline"></i></a>
+                      </li>
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                        <a  data-bs-toggle="modal" class="btn btn-sm btn-soft-danger" (click)="deleteactivite(activite.id)"><i class="mdi mdi-delete-outline"></i></a>
+                      </li>
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="Gestion KPI">
+                        <a class="btn btn-soft-warning waves-effect waves-light" (click)="manageKpiByActivity(activite.id)"><i>Gére KPI</i></a>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="row justify-content-between align-items-center">
+           <!--<div class="col-auto me-auto">
+              <p class="text-muted mb-0">Showing <b>{{service.startIndex}}</b> to <b>{{service.endIndex}}</b> of <b>{{service.totalRecords}}</b> entries</p>
+            </div>--> 
+            <div class="col-auto">
+              <div class="text-md-right float-md-end pagination-rounded">
+            <!--   <ul class="pagination pagination-rounded justify-content-end mb-2">
+                  <pagination [totalItems]="(total | async)!" [(ngModel)]="service.page" [itemsPerPage]="service.pageSize" previousText="&lsaquo;" nextText="&rsaquo;"></pagination>
+                </ul>--> 
+              </div>
+            </div>
+            <!--end col-->
+          </div>
+          <!--end row-->
+        </div>
+      </div>
+    </div>
+  </div>
+<!--</div>-->
+
+<ng-template #addContent role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Ajouter une activité</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal" (click)="modalRef?.hide()"></button>
+  </div>
+  <form (ngSubmit)="addactivite()" [formGroup]="activiteForm">
+    <div class="modal-body">
+      <div class="mb-3">
+        <label for="activity-name" class="form-label">Nom</label>
+        <input type="text" id="activity-name" class="form-control" placeholder="Entrer le nom" required formControlName="name" [ngClass]="{ 'is-invalid': submitted && activiteForm.get('name')?.invalid }"/>
+        <div *ngIf="activiteForm.get('name').invalid && (activiteForm.get('name').touched || submitted)" class="text-danger">
+          {{ handleError('name') }}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="activity-description" class="form-label">Description</label>
+        <input type="text" id="activity-description" class="form-control" placeholder="Entrer la description" required formControlName="description" [ngClass]="{ 'is-invalid': submitted && activiteForm.get('description')?.invalid }"/>
+        <div *ngIf="activiteForm.get('description').invalid && (activiteForm.get('description').touched || submitted)" class="text-danger">
+          {{ handleError('description') }}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Postes</label>
+        <div class="border p-3 rounded" style="background-color: #f8f9fa;">
+          <h6 class="mb-3">Veuillez sélectionner les postes :</h6>
+          <div *ngFor="let poste of listeposte" class="form-check mb-2">
+            <input 
+              type="checkbox" 
+              [value]="poste.id" 
+              (change)="onPosteChange($event)" 
+              class="form-check-input" 
+              id="poste-{{ poste.id }}"
+            />
+            <label class="form-check-label" for="poste-{{ poste.id }}">
+              {{ poste.name }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <div class="hstack gap-2 justify-content-end">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal" (click)="close()">Annuler</button>
+        <button type="submit" class="btn btn-success" id="add-btn">Ajouter</button>
+      </div>
+    </div>
+  </form>
+</ng-template>
+<ng-template #updateContent role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Modifier une activité</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal" (click)="modalRef?.hide()"></button>
+  </div>
+  <form (ngSubmit)="updateactivite()" [formGroup]="activiteForm">
+    <div class="modal-body">
+      <div class="mb-3">
+        <label for="update-activity-name" class="form-label">Nom</label>
+        <input type="text" id="update-activity-name" class="form-control" placeholder="Entrer le nom" required formControlName="name" [ngClass]="{ 'is-invalid': submitted && activiteForm.get('name')?.invalid }"/>
+        <div *ngIf="activiteForm.get('name').invalid && (activiteForm.get('name').touched || submitted)" class="text-danger">
+          {{ handleError('name') }}
+        </div>
+        
+      </div>
+
+      <div class="mb-3">
+        <label for="update-activity-description" class="form-label">Description</label>
+        <input type="text" id="update-activity-description" class="form-control" placeholder="Entrer la description" required formControlName="description" [ngClass]="{ 'is-invalid': submitted && activiteForm.get('description')?.invalid }"/>
+        <div *ngIf="activiteForm.get('description').invalid && (activiteForm.get('description').touched || submitted)" class="text-danger">
+          {{ handleError('description') }}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Postes</label>
+        <div class="border p-3 rounded" style="background-color: #f8f9fa;">
+          <h6 class="mb-3">Veuillez sélectionner les postes :</h6>
+          <div *ngFor="let poste of listeposte" class="form-check mb-2">
+            <input 
+              type="checkbox" 
+              [value]="poste.id" 
+              [checked]="selectedPosteIds.includes(poste.id)" 
+              (change)="onPosteChange($event)" 
+              class="form-check-input" 
+              id="update-poste-{{ poste.id }}"
+            />
+            <label class="form-check-label" for="update-poste-{{ poste.id }}">
+              {{ poste.name }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <div class="hstack gap-2 justify-content-end">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal" (click)="close()">Annuler</button>
+        <button type="submit" class="btn btn-success" id="update-btn">Modifier</button>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+<!-- View Model -->
+<ng-template #viewContent role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Détails de l'activité</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal" (click)="modalRef?.hide()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="mb-3">
+      <label for="view-name-field" class="form-label">Nom</label>
+      <input type="text" id="view-name-field" class="form-control" [value]="selectedActivite?.name" disabled />
+    </div>
+
+    <div class="mb-3">
+      <label for="view-description-field" class="form-label">Description</label>
+      <input type="text" id="view-description-field" class="form-control" [value]="selectedActivite?.description" disabled />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Postes associés</label>
+      <div class="border p-3 rounded" style="background-color: #f8f9fa;">
+        <ul class="list-unstyled">
+          <li *ngFor="let poste of selectedActivite?.postes">
+            {{ poste.name }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal"  (click)="close()" >Fermer</button>
+  </div>
+</ng-template>
+
+
+<!-- End View Modal -->

@@ -1,0 +1,75 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body border-bottom">
+          <div class="d-flex align-items-center">
+            <h5 class="mb-0 card-title flex-grow-1">L'évaluation des performances des employés</h5>
+            <div class="flex-shrink-0 d-flex gap-1">
+              <button class="btn btn-success btn-rounded waves-effect waves-light addContact-modal mb-2" (click)="exportToExcel()">
+                <i class="bx bx-archive-in"></i> Exporter en Excel
+              </button>
+            </div>
+            
+          </div>
+        </div>
+        <div class="card-body border-bottom">
+          <div class="row g-3">
+           <div class="col-xxl-4 col-lg-4">
+            <input type="search" class="form-control" id="searchInput" placeholder="Search for ..." (keyup)="searchEmploye($event.target.value)">
+          </div>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <div class="table-responsive">
+            <table class="table align-middle dt-responsive nowrap w-100 table-check" id="job-list">
+              <thead>
+                <tr>
+                  <th scope="col">Prénom</th>
+                  <th scope="col">Nom</th>
+                  <th scope="col">Cin</th>
+                  <th scope="col">Téléphone</th>
+                  <th scope="col">Poste</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Action</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let data of listegestionEmploye">
+                  <td>{{data.firstname}}</td>
+                  <td>{{data.lastname}}</td>
+                  <td>{{data.cin}}</td>
+                  <td>{{data.phone}}</td>
+                  <td>{{ data?.posteName }}</td>
+                  <td>{{data.email}}</td>
+
+                  <td>
+                    <ul class="list-unstyled hstack gap-1 mb-0">
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="Noter"></li>
+                      <a class="btn btn-soft-warning waves-effect waves-light" (click)="noterEmployer(data.cin)"><i>Noter</i></a>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="row justify-content-between align-items-center">
+        
+            <div class="col-auto">
+              <div class="text-md-right float-md-end pagination-rounded">
+         
+              </div>
+            </div>
+            <!--end col-->
+          </div>
+          <!--end row-->
+        </div>
+      </div>
+    </div>
+  </div>
+<!--</div>-->
+

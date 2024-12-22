@@ -1,0 +1,100 @@
+<div class="container-fluid">
+  <div class="checkout-tabs">
+    <div class="row">
+      <div class="col-xl-12">
+        <tabset [vertical]="true" class="nav-pills flex-column ecommerce-checkout-tab">
+          <tab *ngFor="let activite of activiteList">
+            <ng-template tabHeading>
+              <i>                         </i>
+              <p class="fw-bold mb-4" (click)="getKpiListByActivite(activite.id)">{{activite.name}} </p>
+            </ng-template>
+
+            <div class="card">
+              <div class="card-header">
+                <ul class="nav nav-tabs horizontal-tabset" style="overflow-x: auto;">
+                  <li class="nav-item" *ngFor="let kpi of kpiList; let i = index">
+                    <a 
+                      class="nav-link" 
+                      [class.active]="i === selectedKpiIndex" 
+                      (click)="selectKpi(kpi, i)">
+                      <div>
+                        <i></i>
+                        <p class="fw-bold mb-4" style="margin-left: 8px;">{{ kpi.label }}</p>
+                      </div>
+                    </a>
+                  </li>
+                  
+                </ul>
+              </div>
+              <div class="card-body">
+                <div class="tab-content">
+                  <div *ngFor="let kpi of kpiList; let i = index" 
+                       class="tab-pane fade" 
+                       [class.show]="i === 0" 
+                       [class.active]="i === 0">
+                    <div>
+                      <h4 class="card-title">Evaluer</h4>
+                      <p class="card-title-desc">Évaluation des performances</p>
+                      <form>
+                        <div class="row mb-4" *ngIf="typeKpi == 'NUMERIQUE'">
+                          <label for="billing-note" class="col-md-2 col-form-label">Note</label>
+                          <div class="col-md-10">
+                            <input
+                              type="number"
+                              class="form-control"
+                              id="billing-note"
+                              placeholder="Entrez le note"
+                              [(ngModel)]="note"
+                              name="note"
+                              (change)="getAppreciationByKpiIdAndNote(selectedKpiId, note)"
+                            />
+                          </div>
+                        </div>
+            
+                        <div class="row mb-4" *ngIf="typeKpi == 'STRING'">
+                          <label for="billing-note" class="col-md-2 col-form-label">Options</label>
+                          <div class="col-md-10">
+                            <select
+                              class="form-control"
+                              [(ngModel)]="texte"
+                              name="texte"
+                              (change)="getAppreciationByKpiIdAndTexte(selectedKpiId, texte)"
+                            >
+                              <option value="" selected disabled> Sélectionner</option>
+                              <option *ngFor="let op of optionList" [value]="op">{{ op }}</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="row mb-0">
+                          <label for="example-textarea" class="col-md-2 col-form-label">Appreciation :</label>
+                          <div class="col-md-10">
+                            <textarea
+                              readonly
+                              class="form-control"
+                              [(ngModel)]="appreciation"
+                              name="appreciation"
+                              id="example-textarea"
+                              rows="3"
+                              placeholder="Écrire une appreciation..."
+                            ></textarea>
+                          </div>
+                        </div>
+                        <button type="button" class="btn btn-success" (click)="saveNote()"> Enregister</button>
+                      </form> 
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            
+            
+             
+          </tab>
+
+      
+        </tabset>
+      </div>
+    </div>
+  </div>
+</div>                        

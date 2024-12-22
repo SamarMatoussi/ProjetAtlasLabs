@@ -1,0 +1,412 @@
+<!-- Main Content -->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Indicateur clé de performance</h4>
+          <p class="card-sub-title">KPIs</p>
+
+          <div class="flex-shrink-0 d-flex gap-1">
+            <a class="btn btn-success btn-rounded waves-effect waves-light addContact-modal mb-2" (click)="openAddModal()">Ajouter un KPI</a>
+          </div>
+
+          <div class="row mb-md-2">
+            <div class="col-sm-12 col-md-6">
+              <div class="dataTables_length" id="tickets-table_length">
+                <label class="d-inline-flex align-items-center">Show
+                  <select name="tickets-table_length" aria-controls="tickets-table" name="pageSize"
+                    [(ngModel)]="service.pageSize" class="form-control form-control-sm mx-2">
+                    <option [ngValue]="10">10</option>
+                    <option [ngValue]="50">50</option>
+                    <option [ngValue]="100">100</option>
+                  </select> entries
+                </label>
+              </div>
+            </div>
+            <!-- Search -->
+            <div class="col-sm-12 col-md-6">
+              <div id="tickets-table_filter" class="dataTables_filter text-md-end">
+                <label class="d-inline-flex align-items-center">Search:
+                  <input type="text" name="searchTerm" class="form-control form-control-sm ms-2"
+                    aria-controls="tickets-table" [(ngModel)]="service.searchTerm">
+                </label>
+              </div>
+            </div>
+            <!-- End search -->
+          </div>
+
+          <!-- Table -->
+<div class="table-responsive">
+  <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Nom</th>
+        <th>Label</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let item of kpisWithParametrage; let i = index">
+        <tr>
+          <td align="center">
+            <a class="expand-row" (click)="changeValue(i)" [attr.aria-expanded]="!hideme[i]">
+              {{ hideme[i] ? '+' : '-' }}
+            </a>
+          </td>
+          <td>{{ item.kpi.nameKpi }}</td>
+          <td>{{ item.kpi.label }}</td>
+          <td>{{ item.kpi.description }}</td>
+          <td>
+            <div class="d-flex gap-3">
+              <a title="Ajouter ParametrageKpi" class="text-primary" (click)="openParametrageKpiModal(item.kpi)">
+                <i class="mdi mdi-plus-circle font-size-18"></i>
+              </a>
+              <a title="Modifier Kpi" class="text-success" (click)="openUpdatekpiModal(item.kpi)">
+                <i class="mdi mdi-pencil font-size-18"></i>
+              </a>
+              <a title="Supprimer Kpi" class="text-danger" (click)="deleteKpi(item.kpi.id)">
+                <i class="mdi mdi-delete font-size-18"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="!hideme[i]" class="sub-table no-bg" [attr.id]="'sub-table-' + i">
+          <td align="center"></td>
+          <td colspan="4" class="p-0">
+            <table class="table mb-0 table-striped">
+              <thead class="bg-dark text-white">
+                <tr>
+                  <th><strong>Nom</strong></th>
+                  <th><strong>Description</strong></th>
+                  <th *ngIf="item.kpi.type === 'NUMERIQUE'"><strong>Min</strong></th>
+                  <th *ngIf="item.kpi.type === 'NUMERIQUE'"><strong>Max</strong></th>
+                  <th *ngIf="item.kpi.type === 'STRING'"><strong>Renseignement</strong></th>
+                  <th><strong>Appreciation</strong></th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let param of item.parametrages">
+                  <td>{{ param.name }}</td>
+                  <td>{{ param.description }}</td>
+                  <td *ngIf="item.kpi.type === 'NUMERIQUE'">{{ param.min }}</td>
+                  <td *ngIf="item.kpi.type === 'NUMERIQUE'">{{ param.max }}</td>
+                  <td *ngIf="item.kpi.type === 'STRING'">{{ param.utilite }}</td>
+                  <td>{{ param.appreciation }}</td>
+                  <td>
+                    <div class="d-flex gap-3">
+                      <a title="Modifier parametrageKpi" class="text-success" (click)="openUpdateModal(param)">
+                        <i class="mdi mdi-pencil font-size-18"></i>
+                      </a>
+                      <a title="Supprimer ParametrageKpi" class="text-danger" (click)="deleteParametrageKpi(param.id)">
+                        <i class="mdi mdi-delete font-size-18"></i>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
+
+
+          
+        <!-- Create Modal -->
+<ng-template #addKPIS role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Ajouter un KPI</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modalRef?.hide()"></button>
+  </div>
+  <form (ngSubmit)="addkpi()" [formGroup]="kpiForm">
+    <div class="modal-body">
+      <div class="mb-3">
+        <label for="nameKpi-field" class="form-label">Nom</label>
+        <input type="text" id="nameKpi-field" class="form-control" placeholder="Entrer le nom" required formControlName="nameKpi" 
+               [ngClass]="{ 'is-invalid': submitted && kpiForm.get('nameKpi').invalid }"/>
+        <div *ngIf="submitted && kpiForm.get('nameKpi').invalid" class="invalid-feedback" align="left">
+          <div *ngIf="kpiForm.get('nameKpi').errors['required']">Le nom est requis</div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="label-field" class="form-label">Label</label>
+        <input type="text" id="label-field" class="form-control" placeholder="Entrer le label" required formControlName="label" 
+               [ngClass]="{ 'is-invalid': submitted && kpiForm.get('label').invalid }"/>
+        <div *ngIf="submitted && kpiForm.get('label').invalid" class="invalid-feedback" align="left">
+          <div *ngIf="kpiForm.get('label').errors['required']">Le label est requis</div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="description-field" class="form-label">Description</label>
+        <input type="text" id="description-field" class="form-control" placeholder="Entrer la description" required formControlName="description" 
+               [ngClass]="{ 'is-invalid': submitted && kpiForm.get('description').invalid }"/>
+        <div *ngIf="submitted && kpiForm.get('description').invalid" class="invalid-feedback" align="left">
+          <div *ngIf="kpiForm.get('description').errors['required']">La description est requise</div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="type-field" class="form-label">Type de KPI</label>
+        <select id="type-field" class="form-select" formControlName="type"
+                [ngClass]="{ 'is-invalid': submitted && kpiForm.get('type').invalid }" required
+                (change)="onKpiTypeChange($event.target.value)">
+          <option value="" disabled selected>Sélectionner un type de KPI</option>
+          <option *ngFor="let option of kpiTypeOptions" [value]="option">{{ option }}</option>
+        </select>
+        <div *ngIf="submitted && kpiForm.get('type').invalid" class="invalid-feedback">
+          <div *ngIf="kpiForm.get('type').errors?.['required']">Le type de KPI est requis</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="hstack gap-2 justify-content-end">
+        <button type="button" class="btn btn-light" (click)="close()">Annuler</button>
+        <button type="submit" class="btn btn-success">Ajouter</button>
+      </div>
+    </div>
+  </form>
+</ng-template>
+<!-- End Create Modal -->
+
+
+<!-- ParametrageKpi Modal -->
+<ng-template #addParametrageKpis let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Ajouter ParametrageKpi</h5>
+    <button type="button" class="btn-close" (click)="modalRef?.hide()" aria-label="Close"></button>
+  </div>
+  <form (ngSubmit)="addParametrageKpi()" [formGroup]="parametrageKpiForm">
+    <div class="modal-body">
+      <div class="mb-3">
+        <label for="name-field" class="form-label">Nom</label>
+        <input type="text" id="name-field" class="form-control" placeholder="Entrer le nom" formControlName="name" 
+               [ngClass]="{ 'is-invalid': submitted && parametrageKpiForm.get('name').invalid }" required />
+        <div *ngIf="submitted && parametrageKpiForm.get('name').invalid" class="invalid-feedback">
+          <div *ngIf="parametrageKpiForm.get('name').errors?.['required']">Le nom est requis</div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="description-field" class="form-label">Description</label>
+        <input type="text" id="description-field" class="form-control" placeholder="Entrer la description" formControlName="description" 
+               [ngClass]="{ 'is-invalid': submitted && parametrageKpiForm.get('description').invalid }" required />
+        <div *ngIf="submitted && parametrageKpiForm.get('description').invalid" class="invalid-feedback">
+          <div *ngIf="parametrageKpiForm.get('description').errors?.['required']">La description est requise</div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="appreciation-field" class="form-label">Appréciation</label>
+        <select id="appreciation-field" class="form-select" formControlName="appreciation" 
+                [ngClass]="{ 'is-invalid': submitted && parametrageKpiForm.get('appreciation').invalid }" required aria-describedby="appreciationError">
+          <option value="" disabled selected>Sélectionner une appréciation</option>
+          <option *ngFor="let option of appreciationOptions" [value]="option">{{ option }}</option>
+        </select>
+        <div *ngIf="submitted && parametrageKpiForm.get('appreciation').invalid" id="appreciationError" class="invalid-feedback">
+          <div *ngIf="parametrageKpiForm.get('appreciation').errors?.['required']">L'appréciation est requise</div>
+        </div>
+      </div>
+      <!-- Champ conditionnel selon le type -->
+      <div *ngIf="selectedKpiType === 'NUMERIQUE'">
+        <div class="mb-3">
+          <label for="min-field" class="form-label">Minimum</label>
+          <input type="number" id="min-field" class="form-control" placeholder="Entrer le minimum" formControlName="min" required />
+          <div *ngIf="submitted && parametrageKpiForm.get('min').invalid" class="invalid-feedback">
+            <div *ngIf="parametrageKpiForm.get('min').errors?.['required']">Le minimum est requis</div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="max-field" class="form-label">Maximum</label>
+          <input type="number" id="max-field" class="form-control" placeholder="Entrer le maximum" formControlName="max" required />
+          <div *ngIf="submitted && parametrageKpiForm.get('max').invalid" class="invalid-feedback">
+            <div *ngIf="parametrageKpiForm.get('max').errors?.['required']">Le maximum est requis</div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="selectedKpiType === 'STRING'">
+        <div class="mb-3">
+          <label for="utilite-field" class="form-label">Renseignement</label>
+          <input type="text" id="utilite-field" class="form-control" placeholder="Entrer l'utilité" formControlName="utilite" required />
+          <div *ngIf="submitted && parametrageKpiForm.get('utilite').invalid" class="invalid-feedback">
+            <div *ngIf="parametrageKpiForm.get('utilite').errors?.['required']">Renseignement est requise</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="close()">Annuler</button>
+      <button type="submit" class="btn btn-success">Ajouter</button>
+    </div>
+  </form>
+</ng-template>
+<!-- End ParametrageKpi Modal -->
+
+
+
+   <!-- ParametrageKpi Modal -->
+   <ng-template #updateParametrageKpis let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Modifier ParametrageKpi</h5>
+      <button type="button" class="btn-close" (click)="modalRef?.hide()" aria-label="Close"></button>
+    </div>
+    <form (ngSubmit)="updateparemetrageKpi()" [formGroup]="parametrageKpiForm">
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="name-field" class="form-label">Nom</label>
+          <input type="text" id="name-field" class="form-control" placeholder="Entrer name" formControlName="name" [ngClass]="{ 'is-invalid': submitted && parametrageKpiForm.get('name').invalid }" required />
+          <div *ngIf="submitted && parametrageKpiForm.get('name').invalid" class="invalid-feedback">
+            <div *ngIf="parametrageKpiForm.get('name').errors?.['required']">Name is required</div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="description-field" class="form-label">Description</label>
+          <input type="text" id="description-field" class="form-control" placeholder="Entrer description" formControlName="description" [ngClass]="{ 'is-invalid': submitted && parametrageKpiForm.get('description').invalid }" required />
+          <div *ngIf="submitted && parametrageKpiForm.get('description').invalid" class="invalid-feedback">
+            <div *ngIf="parametrageKpiForm.get('description').errors?.['required']">Description is required</div>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="appreciation-field" class="form-label">Appreciation</label>
+          <select id="appreciation-field" class="form-select" formControlName="appreciation" [ngClass]="{ 'is-invalid': submitted && parametrageKpiForm.get('appreciation').invalid }" required aria-describedby="appreciationError">
+            <option value="" disabled>Select an appreciation</option>
+            <option *ngFor="let option of appreciationOptions" [value]="option">{{ option }}</option>
+          </select>
+          <div *ngIf="submitted && parametrageKpiForm.get('appreciation').invalid" id="appreciationError" class="invalid-feedback">
+            <div *ngIf="parametrageKpiForm.get('appreciation').errors?.['required']">Appreciation is required</div>
+          </div>
+        </div>
+      <!-- Champ conditionnel selon le type -->
+      <div *ngIf="selectedKpiType === 'NUMERIQUE'">
+        <div class="mb-3">
+          <label for="min-field" class="form-label">Minimum</label>
+          <input type="number" id="min-field" class="form-control" placeholder="Entrer le minimum" formControlName="min" required />
+          <div *ngIf="submitted && parametrageKpiForm.get('min').invalid" class="invalid-feedback">
+            <div *ngIf="parametrageKpiForm.get('min').errors?.['required']">Le minimum est requis</div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="max-field" class="form-label">Maximum</label>
+          <input type="number" id="max-field" class="form-control" placeholder="Entrer le maximum" formControlName="max" required />
+          <div *ngIf="submitted && parametrageKpiForm.get('max').invalid" class="invalid-feedback">
+            <div *ngIf="parametrageKpiForm.get('max').errors?.['required']">Le maximum est requis</div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="selectedKpiType === 'STRING'">
+        <div class="mb-3">
+          <label for="utilite-field" class="form-label">Renseignement</label>
+          <input type="text" id="utilite-field" class="form-control" placeholder="Entrer l'utilité" formControlName="utilite" required />
+          <div *ngIf="submitted && parametrageKpiForm.get('utilite').invalid" class="invalid-feedback">
+            <div *ngIf="parametrageKpiForm.get('utilite').errors?.['required']">Renseignement est requise</div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="close()">Annuler</button>
+        <button type="submit" class="btn btn-success">Modifier</button>
+      </div>
+    </form>
+  </ng-template>
+  <!-- End ParametrageKpi Modal -->
+
+  <!-- Kpi Modal -->
+<ng-template #updateKpis let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Modifier Kpi</h5>
+    <button type="button" class="btn-close" (click)="modalRef?.hide()" aria-label="Close"></button>
+  </div>
+  <form (ngSubmit)="updateKpi()" [formGroup]="kpiForm">
+    <div class="modal-body">
+
+      <!-- Name Field -->
+      <div class="mb-3">
+        <label for="name-field" class="form-label">Nom</label>
+        <input type="text" id="name-field" class="form-control" placeholder="Enter nameKpi" formControlName="nameKpi" [ngClass]="{ 'is-invalid': submitted && kpiForm.controls['nameKpi'].invalid }" />
+        <div *ngIf="submitted && kpiForm.controls['nameKpi'].invalid" class="invalid-feedback">
+          <div *ngIf="kpiForm.controls['nameKpi'].errors?.['required']">Name is required</div>
+        </div>
+      </div>
+
+      <!-- Label Field -->
+      <div class="mb-3">
+        <label for="label-field" class="form-label">Label</label>
+        <input 
+          type="text" 
+          id="label-field" 
+          class="form-control" 
+          placeholder="Enter label" 
+          formControlName="label"
+          [ngClass]="{ 'is-invalid': submitted && kpiForm.controls['label'].invalid }" />
+        <div *ngIf="submitted && kpiForm.controls['label'].invalid" class="invalid-feedback">
+          <div *ngIf="kpiForm.controls['label'].errors?.['required']">Label is required</div>
+        </div>
+      </div>
+
+      <!-- Description Field -->
+      <div class="mb-3">
+        <label for="description-field" class="form-label">Description</label>
+        <input 
+          type="text" 
+          id="description-field" 
+          class="form-control" 
+          placeholder="Enter description" 
+          formControlName="description"
+          [ngClass]="{ 'is-invalid': submitted && kpiForm.controls['description'].invalid }" />
+        <div *ngIf="submitted && kpiForm.controls['description'].invalid" class="invalid-feedback">
+          <div *ngIf="kpiForm.controls['description'].errors?.['required']">Description is required</div>
+        </div>
+      </div>
+
+      <!-- Champ de sélection pour KpiType -->
+      <div class="mb-3">
+        <label for="type-field" class="form-label">Type de KPI</label>
+        <select id="type-field" class="form-select" formControlName="type" [ngClass]="{ 'is-invalid': submitted && kpiForm.get('type').invalid }" required>
+          <option value="" disabled>Sélectionner un type de KPI</option>
+          <option *ngFor="let option of kpiTypeOptions" [value]="option">{{ option }}</option>
+        </select>
+        <div *ngIf="submitted && kpiForm.get('type').invalid" class="invalid-feedback">
+          <div *ngIf="kpiForm.get('type').errors?.['required']">Le type de KPI est requis</div>
+        </div>
+      </div>
+      
+
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="modalRef?.hide()">Annuler</button>
+      <button type="submit" class="btn btn-success">Modifier</button>
+    </div>
+  </form>
+</ng-template>
+
+
+
+       
+          <!-- End table -->
+          <div class="row justify-content-md-between align-items-md-center mt-2">
+            <div class="col-sm-12 col-md-5">
+              <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                {{service.startIndex}} to
+                {{service.endIndex}} of {{service.totalRecords}}
+                entries
+              </div>
+            </div>
+            <!-- Pagination -->
+            <div class="col-sm-12 col-md-5">
+              <div class="text-md-right float-md-end pagination-rounded">
+                <pagination [totalItems]="total$ | async" [(ngModel)]="service.page">
+                </pagination>
+              </div>
+            </div>
+            <!-- End Pagination -->
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

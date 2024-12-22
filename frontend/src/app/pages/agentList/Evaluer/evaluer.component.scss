@@ -1,0 +1,21 @@
+.horizontal-tabset {
+    display: flex; // Assure l'affichage en ligne
+    flex-direction: row; // Assure que les éléments soient en ligne
+    overflow-x: auto; // Activer le défilement horizontal si nécessaire
+    white-space: nowrap; // Empêche le retour à la ligne des éléments
+    
+    .nav-item {
+      display: flex; // Affiche les éléments en ligne
+      align-items: center; // Centre verticalement les contenus dans chaque tab
+      margin-right: 10px; // Espace entre les éléments
+      padding: 10px; // Espacement interne
+      // Vous pouvez ajuster les marges et padding selon vos besoins
+    }
+  
+    .nav-link {
+      // Assurez-vous que les liens ne sont pas affichés en bloc
+      display: inline-flex; // Affiche les icônes et les textes en ligne
+      align-items: center; // Aligne verticalement le contenu
+    }
+  }
+  

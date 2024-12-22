@@ -1,0 +1,88 @@
+.modal-body {
+  .user-name {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+    color: #343a40; // Couleur du nom
+  }
+
+  .badge {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase; // Texte en majuscules
+  }
+
+  .agence-container {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .agence-icon {
+      font-size: 1.25rem;
+      margin-right: 0.5rem;
+      color: #1e8c94; // Couleur de l'icône de l'agence
+    }
+
+    .agence-name {
+      font-weight: 500;
+      color: #343a40; // Couleur du nom de l'agence
+    }
+  }
+
+  .card {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); // Ombre pour la carte
+    border: none; // Pas de bordure
+  }
+
+  .form-label {
+    font-weight: bold;
+    color: #495057; // Couleur des étiquettes
+  }
+
+  .form-control {
+    background-color: #f8f9fa; // Fond clair pour les champs
+    border: 1px solid #ced4da; // Bordure des champs
+    border-radius: 0.25rem; // Coins arrondis
+
+    &:disabled {
+      background-color: #e9ecef; // Fond des champs désactivés
+    }
+
+    &:focus {
+      border-color: #2fc7e2; // Couleur de la bordure au focus
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); // Ombre au focus
+    }
+  }
+}
+
+.status-active {
+  background-color: #1e8c94; // Couleur pour le statut actif
+  color: white; // Couleur du texte
+  border: 2px solid #1e8c94; // Bordure verte pour le statut actif
+}
+
+.bg-custom {
+  background-color: #1e8c94; // Couleur personnalisée
+  color: white; // Couleur du texte pour un bon contraste
+}
+
+.status-inactive {
+  background-color: #f8d7da; // Couleur de fond claire pour le statut inactif
+  color: #721c24; // Couleur du texte inactif
+  border: 2px solid #dc3545; // Bordure rouge pour le statut inactif
+}
+
+.modal-footer {
+  .btn-primary {
+    background-color: #1e8c94; // Couleur de fond du bouton
+    border-color: #1e8c94; // Couleur de la bordure du bouton
+
+    &:hover {
+      background-color: #1e8c94; // Couleur au survol
+      border-color: #1e8c94; // Couleur de la bordure au survol
+    }
+  }
+}

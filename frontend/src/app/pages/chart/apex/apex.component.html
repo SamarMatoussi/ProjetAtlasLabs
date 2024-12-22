@@ -1,0 +1,49 @@
+<div class="row">
+  <!-- Graphique des notes globales -->
+  <div class="col-lg-6" *ngIf="columnlabelChart.series && columnlabelChart.series.length > 0">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title mb-4">Notes Globales par CIN</h4>
+        <apx-chart
+        class="apex-charts"
+        dir="ltr"
+        [series]="columnlabelChart.series"
+        [chart]="columnlabelChart.chart"
+        [plotOptions]="columnlabelChart.plotOptions"
+        [yaxis]="columnlabelChart.yaxis"
+        [title]="columnlabelChart.title"
+        [dataLabels]="columnlabelChart.dataLabels"
+        [xaxis]="columnlabelChart.xaxis"
+      ></apx-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graphique de classification par appréciation -->
+  <div class="col-lg-6" *ngIf="pieChart.series && pieChart.series.length > 0">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title mb-4">Classification par Appréciation</h4>
+        <apx-chart
+          class="apex-charts"
+          dir="ltr"
+          [series]="pieChart.series"
+          [chart]="pieChart.chart"
+          [labels]="pieChart.labels"
+          [title]="pieChart.title"
+        ></apx-chart>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Affichage si les données sont vides -->
+<div class="row" *ngIf="!columnlabelChart.series || columnlabelChart.series.length === 0">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <p class="text-center">Chargement des données...</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,146 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body border-bottom">
+          <div class="d-flex align-items-center">
+            <h5 class="mb-0 card-title flex-grow-1">L'évaluation des performances des employés</h5>
+            <div class="flex-shrink-0 d-flex gap-1">
+              <button class="btn btn-success btn-rounded waves-effect waves-light addContact-modal mb-2" (click)="exportToExcel()">
+                <i class="bx bx-archive-in"></i> Exporter en Excel
+              </button>
+            </div>
+            
+          </div>
+        </div>
+        <div class="card-body border-bottom">
+          <div class="row g-3">
+           <div class="col-xxl-4 col-lg-4">
+            <input type="search" class="form-control" id="searchInput" placeholder="Search for ..." (keyup)="searchEmploye($event.target.value)">
+          </div>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <div class="table-responsive">
+            <table class="table align-middle dt-responsive nowrap w-100 table-check" id="job-list">
+              <thead>
+                <tr>
+                  <th scope="col">Prénom</th>
+                  <th scope="col">Nom</th>
+                  <th scope="col">Cin</th>
+                  <th scope="col">Téléphone</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let data of listegestionEmploye">
+                  <td>{{data.firstname}}</td>
+                  <td>{{data.lastname}}</td>
+                  <td>{{data.cin}}</td>
+                  <td>{{data.phone}}</td>
+                  <td>{{data.email}}</td>
+                  <!-- <td>
+                    <span class="badge badge-soft-{{data.type_color}}" [ngClass]="{'badge-soft-info': data.role === 'EMPLOYE', 'badge-soft-warning': data.role === 'AGENT'}">{{data.role}}</span>
+                  </td> -->
+                  <td>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" 
+                               type="checkbox" 
+                               id="switch{{data.cin}}" 
+                               [checked]="data.enabled" 
+                               (change)="toggleAccount(data.cin, $event.target.checked)"
+                               style="width: 36px; height: 20px; margin-top: 5px; margin-right: 5px;">
+                        <label class="form-check-label" for="switch{{data.cin}}"></label>
+                    </div>
+                </td>
+                  <td>
+                    <ul class="list-unstyled hstack gap-1 mb-0">
+                      <li data-bs-toggle="tooltip" data-bs-placement="top" title="Noter"></li>
+                      <a class="btn btn-soft-warning waves-effect waves-light" (click)="noteEmployer(data.id)"><i>Noter</i></a>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="row justify-content-between align-items-center">
+           <!--<div class="col-auto me-auto">
+              <p class="text-muted mb-0">Showing <b>{{service.startIndex}}</b> to <b>{{service.endIndex}}</b> of <b>{{service.totalRecords}}</b> entries</p>
+            </div>--> 
+            <div class="col-auto">
+              <div class="text-md-right float-md-end pagination-rounded">
+            <!--   <ul class="pagination pagination-rounded justify-content-end mb-2">
+                  <pagination [totalItems]="(total | async)!" [(ngModel)]="service.page" [itemsPerPage]="service.pageSize" previousText="&lsaquo;" nextText="&rsaquo;"></pagination>
+                </ul>--> 
+              </div>
+            </div>
+            <!--end col-->
+          </div>
+          <!--end row-->
+        </div>
+      </div>
+    </div>
+  </div>
+<!--</div>-->
+
+
+<!-- View Modal -->
+<ng-template #viewContent role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">Détails de l'employé</h5>
+    <button type="button" class="btn-close" aria-hidden="true" (click)="modalRef?.hide()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h6 class="card-title">Informations personnelles</h6>
+            <div class="mb-3">
+              <label for="viewFirstName" class="form-label">Prénom :</label>
+              <input type="text" class="form-control" id="viewFirstName" [value]="selectedAgent?.firstname" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="viewLastName" class="form-label">Nom :</label>
+              <input type="text" class="form-control" id="viewLastName" [value]="selectedAgent?.lastname" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="viewPhone" class="form-label">Téléphone :</label>
+              <input type="text" class="form-control" id="viewPhone" [value]="selectedAgent?.phone" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="viewEmail" class="form-label">Email :</label>
+              <input type="email" class="form-control" id="viewEmail" [value]="selectedAgent?.email" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h6 class="card-title">Autres informations</h6>
+            <div class="mb-3">
+              <label for="viewRole" class="form-label">Rôle :</label>
+              <input type="text" class="form-control" id="viewRole" [value]="selectedAgent?.role" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="viewStatus" class="form-label">Statut :</label>
+              <input type="text" class="form-control" id="viewStatus" [value]="selectedAgent?.isEnabled" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" (click)="modal.close('Close click')">Fermer</button>
+  </div>
+</ng-template>
+
+
+<!-- End View Modal -->
